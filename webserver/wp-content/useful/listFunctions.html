@@ -1,0 +1,169 @@
+<html>
+<head>
+<title>List Functions</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<style type="text/css">
+#layoutTable {width:100%; height:100%}
+#inputText, #outputText, #log {width:100%; height:100%}
+#logTd {height: 100px}
+</style>
+<script type="text/javascript" src="textFunctions.js"></script>
+<script type="text/javascript">
+
+function sort()
+{
+	var lines = getInputTextItems();
+	sortLines(lines);	
+	setOutputText(lines);
+}
+
+function showUnique()
+{
+	var lines = getInputTextItems();
+	var uniqueLines = new Array();
+	
+	uniqueLines.setCaseSensitive(isCaseSensitive());
+	
+	for(var i=0; i<lines.length; i++)
+	{
+		var line = lines[i];
+		if(!uniqueLines.contains(line))
+		{
+			uniqueLines.push(line);
+		}
+	}
+	
+	sortLines(uniqueLines);
+	setOutputText(uniqueLines);
+}
+
+function countLineOccurrance(onlyShowDuplicates /* boolean */)
+{
+	var lines = getInputTextItems();
+	sortLines(lines);
+	var duplicateLines = new Array();
+	
+	var countStart = onlyShowDuplicates ? 0 : 1;
+	
+	lines.setCaseSensitive(isCaseSensitive());
+	
+	var linesLength = lines.length;
+	while(lines.length > 0)
+	{
+		var line = lines[0];
+		lines.remove(line);
+		var count = countStart;
+		while(lines.contains(line))
+		{
+			lines.remove(line);
+			count++;
+		}
+		
+		if(count > 0)
+		{
+			duplicateLines.push(line + " (" + count +")");
+		}
+	}
+	
+	if(duplicateLines.length == 0)
+	{
+		duplicateLines.push("[No duplicates found]");
+	}
+	
+	setOutputText(duplicateLines);
+}
+
+/**
+ * Sorts the given lines according to the selected configs in the UI
+ */
+function sortLines(lines /* array */)
+{
+	var sortOrder = getSortOrder();
+	if(sortOrder != 'none')
+	{
+		//Sort case sensitive or insensitive
+		if(isCaseSensitive())
+		{
+			lines.sort();
+		}
+		else
+		{
+			lines.sort(compareIgnoreCase);
+		}
+		
+		//Reverse order if sorting descending
+		if(sortOrder == 'descending')
+		{
+			lines.reverse();
+		}
+	}
+}
+
+function getInputTextItems() /* return string [] */
+{
+	return getLines(document.getElementById("inputText"), getDelimiter('delimiterIn'));
+}
+
+function setOutputText(lines /* string [] */)
+{
+	document.getElementById("outputText").value = concatenateLines(lines, getDelimiter('delimiterOut'));
+}
+
+function isCaseSensitive() /* boolean */
+{
+	return document.getElementById('caseSensitive').checked;
+}
+
+function getSortOrder()
+{
+	var sortOrderElements = document.getElementsByName('sortOrder');
+	for(var i=0; i<sortOrderElements.length; i++)
+	{
+		if(sortOrderElements[i].checked)
+		{
+			return sortOrderElements[i].value;
+		}
+	}
+}
+</script>
+
+<body>
+<p>
+Input Delimiter <input type="text" id="delimiterIn"/>
+Output Delimiter <input type="text" id="delimiterOut"/>
+Sort results
+<input type="radio" name="sortOrder" value="none" id="sortNoneRadioBox" checked><label for="sortNoneRadioBox">None</label>
+<input type="radio" name="sortOrder" value="ascending" id="sortAscendingRadioBox"><label for="sortAscendingRadioBox">Ascending</label>
+<input type="radio" name="sortOrder" value="descending" id="sortDescendingRadioBox"><label for="sortDescendingRadioBox">Descending</label>
+
+<input type="checkbox" id="caseSensitive" checked="checked"><label for="caseSensitive">Case sensitive</label>
+</p>
+<p>
+<input type="button" value="Sort" onclick="sort()"/>
+<input type="button" value="Show unique items" onclick="showUnique()"/>
+<input type="button" value="Show duplicate items" onclick="countLineOccurrance(true)"/>
+<input type="button" value="Show line counts" onclick="countLineOccurrance(false)"/>
+
+</p>
+<table id="layoutTable">
+	<tr id="logRow" style="display:none">
+		<td id="logTd" colspan="2">
+			<textarea id="log"></textarea>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Input text<br/>
+<textarea id="inputText">beth
+BETH
+dog
+cat</textarea>
+		</td>
+		<td>
+			Output text<br/>
+<textarea id="outputText"></textarea>
+		</td>
+	</tr>
+</table>
+</body>

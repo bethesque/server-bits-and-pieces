@@ -1,0 +1,177 @@
+<html>
+<head>
+<!-- Bethany Skurrie September 2004-->
+<title>Sneaky Keyboard</title>
+<style type="text/css">
+input {width:30px}
+td {text-align:center; vertical-align:top}
+table {float:left; padding:50px}
+.main {padding:20px}
+</style>
+
+<script type="text/javascript">
+
+var shiftDown = false;
+
+
+var NS;
+if(navigator.appName == "Netscape")
+{
+	NS = true;
+	document.captureEvents(Event.KEYDOWN | Event.KEYUP);
+	document.onkeydown = actOnKeyDownNS;
+	document.onkeyup = actOnKeyUpNS;
+}
+else
+{
+	document.onkeydown = actOnKeyDown;
+	document.onkeyup = actOnKeyUp;
+}
+
+function getTextBox()
+{
+	var textBox = null;
+	if(NS)
+	{
+		textBox = document.getElementById("theText");
+	}
+	else
+	{
+		textBox = document.all.theText;
+	}
+	return textBox;
+}
+
+function typeThis(button)
+{
+	var theChar;
+
+	if(!shiftDown)
+		theChar = button.value;
+	else
+		theChar = button.value.toUpperCase();
+
+	getTextBox().value = getTextBox().value + theChar;
+}
+
+function backspace()
+{
+	var word = getTextBox().value;
+	getTextBox().value = word.substring(0,word.length-1);
+}
+
+function clearText()
+{
+	getTextBox().value = "";
+}
+
+function actOnKeyDownNS(event)
+{
+	if(event.keyCode == 16)
+		shiftDown = true;
+}
+
+function actOnKeyUpNS(event)
+{
+	if(event.keyCode == 16)
+		shiftDown = false;
+}
+
+function actOnKeyDown()
+{
+	if(event.keyCode == 16)
+		shiftDown = true;
+}
+
+function actOnKeyUp()
+{
+	if(event.keyCode == 16)
+		shiftDown = false;
+}
+</script>
+</head>
+<body>
+
+<table>
+<tr>
+<td colspan="2">
+<input type="text" id="theText" style="width:150px" name="theText" readonly="readonly">
+<input type="button" value="&lt;" onClick="backspace()">
+<input type="button" value="Clear" onClick="clearText()" style="width:60px">
+
+</td>
+
+</tr>
+
+<tr>
+<td class="main">
+
+<table>
+<tr><td>
+<input type="button" value="q" onClick="typeThis(this)">
+<input type="button" value="w" onClick="typeThis(this)">
+<input type="button" value="e" onClick="typeThis(this)">
+<input type="button" value="r" onClick="typeThis(this)">
+<input type="button" value="t" onClick="typeThis(this)">
+<input type="button" value="y" onClick="typeThis(this)">
+<input type="button" value="u" onClick="typeThis(this)">
+<input type="button" value="i" onClick="typeThis(this)">
+<input type="button" value="o" onClick="typeThis(this)">
+<input type="button" value="p" onClick="typeThis(this)">
+</td></tr>
+<tr><td>
+<input type="button" value="a" onClick="typeThis(this)">
+<input type="button" value="s" onClick="typeThis(this)">
+<input type="button" value="d" onClick="typeThis(this)">
+<input type="button" value="f" onClick="typeThis(this)">
+<input type="button" value="g" onClick="typeThis(this)">
+<input type="button" value="h" onClick="typeThis(this)">
+<input type="button" value="j" onClick="typeThis(this)">
+<input type="button" value="k" onClick="typeThis(this)">
+<input type="button" value="l" onClick="typeThis(this)">
+
+<tr><td>
+<input type="button" value="z" onClick="typeThis(this)">
+<input type="button" value="x" onClick="typeThis(this)">
+<input type="button" value="c" onClick="typeThis(this)">
+<input type="button" value="v" onClick="typeThis(this)">
+<input type="button" value="b" onClick="typeThis(this)">
+<input type="button" value="n" onClick="typeThis(this)">
+<input type="button" value="m" onClick="typeThis(this)">
+<input type="button" value="&nbsp;">
+</td></tr>
+</table>
+
+</td>
+<td class="main">
+
+
+<table>
+	<tr>
+		<td><input type="button" value="7" onClick="typeThis(this)"></td>
+		<td><input type="button" value="8" onClick="typeThis(this)"></td>
+		<td><input type="button" value="9" onClick="typeThis(this)"></td>
+	</tr>
+	<tr>
+		<td><input type="button" value="4" onClick="typeThis(this)"></td>
+		<td><input type="button" value="5" onClick="typeThis(this)"></td>
+		<td><input type="button" value="6" onClick="typeThis(this)"></td>
+	</tr>
+	<tr>
+		<td><input type="button" value="1" onClick="typeThis(this)"></td>
+		<td><input type="button" value="2" onClick="typeThis(this)"></td>
+		<td><input type="button" value="3" onClick="typeThis(this)"></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="button" value="0" onClick="typeThis(this)"></td>
+		<td>&nbsp;</td>
+	</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

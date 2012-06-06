@@ -1,0 +1,216 @@
+<html>
+<head>
+<title>List Comparer</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<script type="text/javascript" src="textFunctions.js"></script>
+<script type="text/javascript">
+
+/**
+ * Main method called by pressing the "Sort" button
+ */
+function doSort()
+{
+	var listAtextArea = document.getElementById('listA');
+	var listBtextArea = document.getElementById('listB');
+	var listAonlyTextArea = document.getElementById('listAonly');
+	var listBonlyTextArea = document.getElementById('listBonly');
+	var commonTextArea = document.getElementById('common');	
+	
+	var delimiterIn = getDelimiter('delimiterIn');
+	
+	if(delimiterIn == "")
+	{
+		alert("Please enter a delimiter");
+		return;
+	}
+	
+	var delimiterOut = getDelimiter('delimiterOut');
+	
+	if(delimiterOut == "")
+	{
+		delimiterOut = "\n";
+	}
+	
+	//array
+	var listAlines = getLines(listAtextArea, delimiterIn);
+	//array
+	var listBlines = getLines(listBtextArea, delimiterIn);
+	var listAlinesOnly = new Array();
+	var listBlinesOnly = new Array();
+	var commonLines = new Array();
+	
+	log("ListA " + listAlines.join(","));
+	log("ListB " + listBlines.join(","));
+	 
+	//do the sort
+	sort(listAlines, listBlines, listAlinesOnly, listBlinesOnly, commonLines, isCaseSensitive());
+	
+	if(isSortResults())
+	{
+		if(isCaseSensitive())
+		{
+			listAlinesOnly = listAlinesOnly.sort();
+			listBlinesOnly = listBlinesOnly.sort();
+			commonLines = commonLines.sort();
+		}
+		else
+		{
+			listAlinesOnly = listAlinesOnly.sort(compareIgnoreCase);
+			listBlinesOnly = listBlinesOnly.sort(compareIgnoreCase);
+			commonLines = commonLines.sort(compareIgnoreCase);		
+		}
+	}
+	
+	//set values of result text areas
+	listAonlyTextArea.value = listAlinesOnly.join(delimiterOut);
+	listBonlyTextArea.value = listBlinesOnly.join(delimiterOut);
+	commonTextArea.value = commonLines.join(delimiterOut);
+	
+	document.getElementById('onlyListAtitle').innerHTML += " (" + listAlinesOnly.length + " items)";
+	document.getElementById('onlyListBtitle').innerHTML += " (" + listBlinesOnly.length + " items)";
+	document.getElementById('commonItemsTitle').innerHTML += " (" + commonLines.length + " items)";
+	
+}
+
+function isSortResults() /* boolean */
+{
+	return document.getElementById('sort').checked;
+}
+
+function isCaseSensitive() /* boolean */
+{
+	return document.getElementById('caseSensitive').checked;
+}
+/**
+ * The main sorting algorithm
+ * listA - an array of strings
+ * listB - an array of strings
+ * listAonly - empty array, will be populated with strings only found in listA
+ * listBonly - empty array, will be populated with strings only found in listB
+ * common - empty array, will be populated with strings found in both lists
+ */
+function sort(listA /* array */, listB /* array */, listAonly /* array */, listBonly /* array */, common /* array */, isCaseSensitive /* boolean */)
+{
+	var listACopy = listA.slice();
+	var listBCopy = listB.slice();
+	listB.setCaseSensitive(isCaseSensitive);
+	listBCopy.setCaseSensitive(isCaseSensitive);
+	
+	for(var i=0; i<listA.length; i++)
+	{
+		var lineA = listA[i];
+		
+		//if lineA is in both lists...
+		if(listB.contains(lineA))
+		{
+			//add it to the common list
+			common.push(lineA);
+			//remove it from the B list
+			listBCopy.remove(lineA);
+		}
+		//else it is only in listA
+		else
+		{
+			listAonly.push(lineA);
+		}
+	}
+	
+	listBonly.addAll(listBCopy);
+}
+
+function setLabels()
+{
+	document.getElementById('onlyListAtitle').innerHTML = "Items only in " + document.getElementById('listAtitle').value;
+	document.getElementById('onlyListBtitle').innerHTML = "Items only in " + document.getElementById('listBtitle').value;
+	document.getElementById('commonItemsTitle').innerHTML = "Common items";
+}
+
+function doClear()
+{
+	setLabels();
+	var listAtextArea = document.getElementById('listA');
+	var listBtextArea = document.getElementById('listB');
+	var listAonlyTextArea = document.getElementById('listAonly');
+	var listBonlyTextArea = document.getElementById('listBonly');
+	var commonTextArea = document.getElementById('common');	
+	var logTextArea = document.getElementById('log');
+	
+	listAtextArea.value="";
+	listBtextArea.value="";
+	listAonlyTextArea.value="";
+	listBonlyTextArea.value="";
+	commonTextArea.value="";
+	logTextArea.value="";
+}
+
+
+
+
+
+</script>
+
+<style type="text/css">
+
+textarea {width:100%; height:100%;}
+#titles td {height:15px}
+#buttonRow td {height:50px; vertical-align:top}
+#logTd {height: 100px}
+td.listTitleTd {padding:5px}
+</style>
+
+<body>
+<form>
+<table style="height:100%;width:100%">
+	<tr id="buttonRow">
+		<td colspan="5">
+			Input Delimiter <input type="text" id="delimiterIn"/>&nbsp;&nbsp;
+			Output Delimiter <input type="text" id="delimiterOut"/>&nbsp;&nbsp;
+			<input type="checkbox" id="sort"><label for="sort">Sort results</label>&nbsp;&nbsp;
+			<input type="checkbox" id="caseSensitive" checked="checked"><label for="caseSensitive">Case sensitive</label>
+			<input type="button" value="Compare" onclick="doSort()" />
+			<input type="button" value="Clear" onclick="doClear()" />
+		</td>
+	</tr>
+	<tr id="titles">
+		<td><input id="listAtitle" type="text" value="List A" style="width:100%" onchange="setLabels()"/></td>
+		<td><input id="listBtitle" type="text" value="List B" style="width:100%" onchange="setLabels()"/></td>
+		<td class="listTitleTd"><span id="onlyListAtitle">Only List A</span></td>
+		<td class="listTitleTd"><span id="onlyListBtitle">Only List B</span></td>
+		<td class="listTitleTd"><span id="commonItemsTitle">Common items</span></td>
+	</tr>
+	<tr>
+		<td>
+			<textarea id="listA">
+Item3
+Item2
+Item1
+			</textarea>
+		</td>	
+		<td>
+			<textarea id="listB">
+Item4
+Item3
+ITEM2
+			</textarea>
+		</td>	
+		<td>
+			<textarea id="listAonly"></textarea>
+			
+		</td>	
+		<td>
+			<textarea id="listBonly"></textarea>
+		</td>	
+		<td>
+			<textarea id="common"></textarea>
+		</td>	
+	</tr>
+	<tr id="logRow" style="display:none">
+		<td id="logTd" colspan="5">
+			<textarea id="log"></textarea>
+		</td>
+	</tr>
+</table>
+</form>
+</body>
+</html>

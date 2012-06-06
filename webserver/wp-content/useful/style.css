@@ -1,0 +1,4 @@
+body {padding:10px; background-color: #EEF3E2}
+body, td {font-family: Verdana, Arial; font-size:10pt}
+textarea, input {border:1px solid black; padding:5px}
+#delimiterIn, #delimiterOut {width:100px}

@@ -1,0 +1,24 @@
+<% 
+$: << File.dirname(__FILE__)
+require "net/http" 
+require "uri"
+require "date"
+require "calendar"
+
+include Calendar
+
+begin
+    log = ""
+
+    header, events, footer = retrieve_calendar("http://www.facebook.com", "/ical/u.php?#{ENV['QUERY_STRING']}")
+    header.gsub!(/X-WR-CALNAME:.*Facebook Events/, "X-WR-CALNAME:My Facebook Events #{Calendar.download_time}")
+    events.delete_if  do | event |
+      start = start_time(event) 
+      finish = end_time(event)
+      start && finish && ((finish - start) > 2) && event.match("PARTSTAT:NEEDS-ACTION")
+    end
+rescue Exception => e
+  log << " Exception " +  e
+  log << e.backtrace.join("\n")
+end
+%><%= log %><%= header %><%= events.join %><%= footer %>

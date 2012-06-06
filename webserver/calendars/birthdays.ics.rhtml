@@ -1,0 +1,30 @@
+<% 
+$: << File.dirname(__FILE__)
+require "net/http" 
+require "uri"
+require "date"
+require "calendar"
+
+include Calendar
+
+begin
+    log = ""
+    header, events, footer = retrieve_calendar("http://www.facebook.com", "/ical/b.php?#{ENV['QUERY_STRING']}")
+    header.gsub!("Friends' Birthdays", "Birthdays #{Calendar.download_time}")
+    new_events = []
+    today = DateTime.now
+    events.each do | event |
+      new_event = String.new(event)
+      birthday_date = start_time(event)
+      last_birthday_date = DateTime.new(birthday_date.year-1, birthday_date.month, birthday_date.day)
+      if (today - last_birthday_date) < 31
+        new_event.gsub!("DTSTART:#{birthday_date.year}","DTSTART:#{last_birthday_date.year}")      
+        new_events << new_event
+      end
+    end  
+    events += new_events
+rescue Exception => e
+  log << " Exception " +  e
+  log << e.backtrace.join("\n")
+end
+%><%= log %><%= header %><%= events.join %><%= footer %>

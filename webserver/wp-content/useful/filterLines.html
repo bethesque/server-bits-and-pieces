@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>Filter Lines</title>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<style type="text/css">
+textarea {width:100%; height:380px}
+</style>
+
+<script type="text/javascript">
+
+function filter()
+{
+    var showPattern = document.getElementById("showPatternTextBox").value;
+    var hidePattern = document.getElementById("hidePatternTextBox").value;
+    var text = document.getElementById("inputTextArea").value;
+    //array
+    var lines = text.split("\n");
+    var outputText = "";
+    
+    var matchedLineCount = 0;
+    
+    for(var i=0; i<lines.length; i++)
+    {
+        var line = lines[i];
+        if((showPattern == "" || line.search(showPattern) != -1) && (hidePattern == "" || line.search(hidePattern) == -1))
+        {
+            outputText += line + "\n";
+            matchedLineCount++;
+        }
+    }
+    
+    document.getElementById("outputTextArea").value = outputText;
+    document.getElementById("outputMessage").innerHTML = "Matched " + matchedLineCount + " lines";
+}
+
+
+</script>
+</head>
+
+<body>
+
+
+<table>
+	<tr>
+		<td>
+			<label for="patternTextBox">Show lines with this pattern</label>
+		</td>
+		<td>
+			<input type="text" id="showPatternTextBox">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<label for="hidePatternTextBox">Hide lines with this pattern</label>
+		</td>
+		<td>
+			<input type="text" id="hidePatternTextBox">
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td style="text-align:right"><input type="button" onclick="filter()" value="Filter"></td>
+	</tr>
+</table>
+
+<p>
+<textarea id="inputTextArea">
+</textarea>
+</p>
+<p id="outputMessage" style="height:20px">
+</p>
+<p>
+<textarea id="outputTextArea">
+
+</textarea>
+</p>
+
+
+</body>
+</html>

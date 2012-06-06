@@ -1,0 +1,161 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css" />
+<style type="text/css">
+#delimiterRow input {}
+#textRow textarea{width:100%; height:100%}
+#menu {width:100%;}
+#main {width:100%; height:100%}
+#buttonRow td{height:50px}
+#delimiterRow td{height:50px}
+</style>
+
+<script type="text/javascript" src="textFunctions.js"></script>
+<script type="text/javascript">
+var NEW_LINE = "\n";
+
+var columnCount = 5;
+
+
+function split()
+{
+	clearColumns(false);
+	var delimiters = getDelimiters();
+	
+	var textArea = document.getElementById('text0');
+	var linesArray = getLines(textArea, NEW_LINE);
+	
+	for(var i=0; i<linesArray.length; i++)
+	{
+		var line = linesArray[i] + "\n";
+		var start = 0;
+		
+		for(var j=0; j<delimiters.length; j++)
+		{
+			var end = line.indexOf(delimiters[j], start);
+			if(end == -1)
+			{
+				end = line.length-1;
+			}
+			var newTextArea = document.getElementById('text' + (j+1));
+			newTextArea.value += line.substring(start, end) + NEW_LINE;
+			start = end + delimiters[j].length;			
+		}		
+		
+	}	
+}
+
+function clearColumns(clearInputToo /* boolean */)
+{
+	var start = clearInputToo ? 0 : 1;
+	for(var i=start; i<columnCount; i++)
+	{
+		document.getElementById('text' + i).value = "";
+	}
+	
+	if(clearInputToo)
+	{
+		for(var i=1; i<columnCount; i++)
+		{
+			document.getElementById('delimiter' + i).value = "";
+		}
+	}
+}
+
+
+function getDelimiter(i /* int */) /* string */
+{
+	try
+	{
+		return document.getElementById('delimiter' + i).value;
+	}
+	catch(exception)
+	{
+		alert('Element delimiter' + i + ' does not exist');
+		throw exception;
+	}
+}
+
+function getDelimiters()
+{
+	var delimiters = new Array();
+	for(var i=1; i<columnCount; i++)
+	{
+		var delimiter = getDelimiter(i);
+		if(delimiter != null && delimiter.length > 0)
+		{
+			delimiters.push(delimiter);
+		}
+	}
+	
+	if(delimiters.length < columnCount -1)
+	{
+		delimiters.push("\n");
+	}
+	return delimiters;
+}
+
+</script>
+
+</head>
+<body>
+
+<table id="menu">
+<tr id="buttonRow">
+<td>
+<input type="button" onclick="split()" value="Split" />
+<input type="button" onclick="clearColumns(true);" value="Clear" />
+</td>
+</tr>
+</table>
+
+<table id="main">
+<tr id="delimiterRow">
+	<td>
+	&nbsp;
+	</td>
+	<td colspan="2">
+		<input type="text" id="delimiter1" class="delimiter" value='"' onchange="split()"/>
+	</td>
+	<td colspan="2">
+		<input type="text" id="delimiter2" class="delimiter" value='"'onchange="split()"/>
+	</td>
+	<td colspan="2">
+		<input type="text" id="delimiter3" class="delimiter" onchange="split()"/>
+	</td>
+	<td colspan="2">
+		<input type="text" id="delimiter4" class="delimiter" onchange="split()"/>
+	</td>
+	<td>
+		&nbsp;
+	</td>
+</tr>
+
+<tr id="textRow">
+	<td colspan="2">
+		<textarea id="text0">
+object.setApple("apple");
+object.setBanana("banana");
+object.setCat("cat");
+object.setDog("dog");
+				
+		</textarea>
+	</td>
+	<td colspan="2">
+		<textarea id="text1"></textarea>
+	</td>
+	<td colspan="2">
+		<textarea id="text2"></textarea>
+	</td>
+	<td colspan="2">
+		<textarea id="text3"></textarea>
+	</td>	
+	<td colspan="2">
+		<textarea id="text4"></textarea>
+	</td>	
+</tr>
+
+
+</table>
+</body>
+</html>

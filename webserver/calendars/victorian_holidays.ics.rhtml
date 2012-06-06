@@ -1,0 +1,21 @@
+<% 
+$: << File.dirname(__FILE__)
+require "net/http" 
+require "uri"
+require "date"
+require "calendar"
+
+include Calendar
+
+begin    
+    header, events, footer = Calendar.retrieve_calendar("http://www.google.com", '/calendar/ical/en.australian%23holiday%40group.v.calendar.google.com/public/basic.ics')
+    header.gsub!("X-WR-CALDESC:Australian Holidays", "X-WR-CALNAME:Victorian Holidays")
+    header.gsub!("PRODID:-//Google Inc//Google Calendar 70.9054//EN\n","")
+      log << " #{events.class} #{events.methods.join(" ")}"
+    events.delete_if  do | event |
+      keep = !event.match(/\[/) || event.match("VIC") || event.match("All Except")
+      !keep
+    end
+rescue Exception => e
+end
+%><%= header %><%= events.join %><%= footer %>

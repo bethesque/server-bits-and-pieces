@@ -1,0 +1,63 @@
+<%
+# Every nerdy couple needs an RSS feed to encourage him to actually read the links she sends him
+
+$: << File.dirname(__FILE__)
+require "net/http"
+require "date"
+require "tmail"
+require "../rubylib/convert_time_zone"
+
+def date_of email
+  format_date email.date.convert_time_zone(ENV['LOCAL_TIMEZONE'])
+end
+
+def now
+  format_date Time.now.convert_time_zone(ENV['LOCAL_TIMEZONE'])
+end
+
+def format_date date
+  date.strftime("%a, %e %b %Y %H:%M:%S %z")
+end
+
+def email_to_rss_entry email
+  link = email.subject
+  description = email.parts[0].body.strip
+  title = description
+  pubDate = date_of email
+"""
+<item>
+  <title>#{title}</title>
+  <link>#{link}</link>
+  <description>#{description}</description>
+  <pubDate>#{pubDate}</pubDate>
+  <guid>#{link}</guid>
+</item>
+"""
+end
+
+emails = []
+email_dir = Dir.new(ENV['MAILDIR'])
+email_files = email_dir.collect { | email_file | email_dir.path + "/" + email_file}
+email_files = email_files.reject{ | email_file | File.extname(email_file) != ".thunder"}
+email_files = email_files.sort_by{ | email_file | File.ctime(email_file) }.reverse
+email_files.each do | email_file |    
+  email = TMail::Mail.load(email_file)
+  if email.to.join("-").include?("rss")
+    emails << email
+  end  
+  break if emails.size == 10    
+end
+
+server_name = ENV['SERVER_NAME']
+
+%><?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>Beth's links for The Trav</title>
+<link>http://<%= server_name %></link>
+<pubDate><%= emails.any? ? date_of(emails.first) : now %></pubDate>
+<atom:link href="http://<%= server_name %>/rss/thetrav.rss.rhtml" rel="self" type="application/rss+xml" />
+<description>Beth's links for Trav to read, or at least pretend. Just remember, there may be a test afterwards.</description>
+<%= emails.collect{ | email | email_to_rss_entry email } %>
+</channel>
+</rss>

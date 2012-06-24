@@ -21,14 +21,3 @@ END_OF_MESSAGE
 		smtp.send_message msg, from, to
 	end
 end
-
-#TODO use proper library for this
-def read_stdin
-   text = ""
-   stdin = ""
-   until stdin == nil
-      stdin = STDIN.gets
-      text << stdin unless stdin.nil?
-   end
-   text
-end

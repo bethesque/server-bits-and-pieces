@@ -6,7 +6,7 @@ require 'email'
 include ServerConfig
 
 searches = {
-	"MAC" => ["","Studiofix NC30", "Powerpoint stubborn", "brun"],
+	"MAC" => ["Studiofix NC30", "Powerpoint stubborn", "brun"],
         "AmazingConcealer" => ["Light Golden"],
         "Amazing Concealer" => ["Light Golden"],
         "" => ["Urban Decay", "UrbanDecay"],

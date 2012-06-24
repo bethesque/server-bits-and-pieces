@@ -20,8 +20,10 @@ def format_date date
 end
 
 def email_to_rss_entry email
-  link = email.subject
-  description = email.parts[0].body.strip
+  body = email.parts[0].body.strip 
+  subject_contains_url = email.subject.start_with?('http')
+  link = subject_contains_url ? email.subject : body
+  description = subject_contains_url ? body : email.subject
   title = description
   pubDate = date_of email
 """

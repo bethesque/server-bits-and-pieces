@@ -15,6 +15,7 @@ module Calendar
     res = Net::HTTP.start(url.host, url.port) {|http| http.request(req) }
     output = res.body
     output.gsub!("CLASS:PRIVATE","CLASS:PUBLIC")
+    output.gsub!(/(DTSTART\:\d{8})(\D)/) {"#{$1}T090000Z#{$2}"}
     random_string = "ksnfri3y4ounxjhi2385944jdfnkuw4974kijgfjso1ncdj"
     output.gsub!("BEGIN:VEVENT", random_string+"BEGIN:VEVENT")
     events = output.split(random_string)

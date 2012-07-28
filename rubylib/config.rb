@@ -1,6 +1,6 @@
 #http://mjijackson.com/2010/02/flexible-ruby-config-objects
 
-class Config
+class Conf
 
   def initialize(data={})
     @data = {}
@@ -19,7 +19,7 @@ class Config
 
   def []=(key, value)
     if value.class == Hash
-      @data[key.to_sym] = Config.new(value)
+      @data[key.to_sym] = Conf.new(value)
     else
       @data[key.to_sym] = value
     end
@@ -38,7 +38,7 @@ end
 require 'yaml'
 module ServerConfig  
   def config
-    @conf ||= Config.new(YAML.load_file("#{ENV['HOME']}/conf/config.yaml"))
+    @conf ||= Conf.new(YAML.load_file("#{ENV['HOME']}/conf/config.yaml"))
     @conf
   end
 end

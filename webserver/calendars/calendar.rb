@@ -1,8 +1,9 @@
+$: << ENV['LIBPATH']
 require "net/http" 
 require "uri"
 require "date"
 require 'action_view'
-require '../rubylib/convert_time_zone'
+require 'convert_time_zone'
 
 class DateHelper
   include ActionView::Helpers::DateHelper

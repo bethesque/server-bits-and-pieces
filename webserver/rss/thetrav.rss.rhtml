@@ -2,10 +2,12 @@
 # Every nerdy couple needs an RSS feed to encourage him to actually read the links she sends him
 
 $: << File.dirname(__FILE__)
+$: << ENV['LIBPATH']
 require "net/http"
 require "date"
 require "tmail"
-require "../rubylib/convert_time_zone"
+require "convert_time_zone"
+
 
 def date_of email
   format_date email.date.convert_time_zone(ENV['LOCAL_TIMEZONE'])

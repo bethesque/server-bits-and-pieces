@@ -19,7 +19,7 @@ def now
 end
 
 def format_date date
-  date.strftime("%a %e %b %I:%M%p")
+  date.strftime("%a %I%p").gsub(/ 0/,' ')
 end
 
 if ENV['QUERY_STRING'].include?(config.balance.passphrase) 
@@ -36,7 +36,7 @@ if ENV['QUERY_STRING'].include?(config.balance.passphrase)
   end
 
   if email
-    out << email.subject.split(", ").join("\n") + "\n" + date_of(email)
+    out << email.subject.split(", ").join("\n") + "\n" + date_of(email) + ", " + now
   end
 
 end

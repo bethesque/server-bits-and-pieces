@@ -1,0 +1,15 @@
+<%
+
+$: << File.dirname(__FILE__)
+$: << ENV['LIBPATH']
+require 'config'
+include ServerConfig
+
+if ENV['QUERY_STRING'].include?(config.balance.passphrase) 
+   balance = cgi.params['balance']
+   if balance.length < 100
+      File.open(config.balance.file_path, "w") { |io|  io.write(balance) }
+   end
+end
+
+%>

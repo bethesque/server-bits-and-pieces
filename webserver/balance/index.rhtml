@@ -5,13 +5,13 @@ $: << ENV['LIBPATH']
 require 'config'
 include ServerConfig
 require "date"
-require "tmail"
 require "convert_time_zone"
 
 out = ''
 
-def date_of email
-  format_date email.date.convert_time_zone(ENV['LOCAL_TIMEZONE'])
+def mod_date_of file_name
+  File.mtime(file_name)
+  format_date File.mtime(file_name).convert_time_zone(ENV['LOCAL_TIMEZONE'])
 end
 
 def now
@@ -24,20 +24,8 @@ end
 
 if ENV['QUERY_STRING'].include?(config.balance.passphrase) 
 
-  emails = []
-  email_dir = Dir.new(ENV['MAILDIR'])
-  email_files = email_dir.collect { | email_file | email_dir.path + "/" + email_file}
-  email_files = email_files.reject{ | email_file | File.extname(email_file) != ".thunder"}
-  email_files = email_files.sort_by{ | email_file | File.ctime(email_file) }.reverse
-  email = nil
-  email_files.find do | email_file |
-    email = TMail::Mail.load(email_file)
-    email.to.join("-").include?("balance")
-  end
-
-  if email
-    out << email.subject.split(", ").join("\n") + "\n" + date_of(email) + ", " + now
-  end
+  balance = File.open(config.balance.file_path, "rb") { |io| io.read }
+  out << balance.split(", ").join("\n") + "\n" + mod_date_of(config.balance.file_path) + ", " + now
 
 end
 %>
